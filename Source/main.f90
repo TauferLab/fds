@@ -76,6 +76,12 @@ REAL(EB), ALLOCATABLE, DIMENSION(:)       :: REAL_BUFFER_1
 REAL(EB), ALLOCATABLE, DIMENSION(:,:)     :: REAL_BUFFER_2,REAL_BUFFER_3,REAL_BUFFER_5,REAL_BUFFER_6,REAL_BUFFER_8,&
                                              REAL_BUFFER_11,REAL_BUFFER_12,REAL_BUFFER_13,REAL_BUFFER_14
 
+! Used to time initialization
+INTEGER :: INIT_TIMER_START, INIT_TIMER_END, CLOCK_MAX
+REAL :: CLOCK_RATE
+
+CALL SYSTEM_CLOCK (INIT_TIMER_START, CLOCK_RATE, CLOCK_MAX)   ! Start initialization timer
+
 ! Initialize OpenMP
 
 CALL OPENMP_INIT
@@ -517,6 +523,13 @@ DO N=1,N_DEVC
          DEVC_PIPE_OPERATING(DEVICE(N)%PIPE_INDEX) + 1
    ENDIF
 ENDDO
+
+
+! End initialization timer
+CALL SYSTEM_CLOCK (INIT_TIMER_END, CLOCK_RATE, CLOCK_MAX)
+
+! Total initialization time 
+WRITE(LU_OUTPUT, '(A, F8.3, A/)') ' Initialization time: ', (INIT_TIMER_END - INIT_TIMER_START) / CLOCK_RATE, ' seconds'
 
 ! Start the clock for time stepping
 
